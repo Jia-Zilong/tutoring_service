@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>工资管理</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>工资管理</h1>
+    <form id="salary-form">
+        <input type="text" name="teacher_id" placeholder="教师ID" required>
+        <input type="number" name="amount" placeholder="金额" required>
+        <input type="date" name="date" required>
+        <button type="submit">添加工资</button>
+    </form>
+    <table id="salary-table">
+        <thead>
+            <tr>
+                <th>教师ID</th>
+                <th>金额</th>
+                <th>日期</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        const form = document.getElementById('salary-form');
+        const tableBody = document.querySelector('#salary-table tbody');
+
+        form.onsubmit = async e => {
+            e.preventDefault();
+            const data = {
+                teacher_id: form.teacher_id.value,
+                amount: form.amount.value,
+                date: form.date.value
+            };
+            const res = await fetch('/api/salary', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (res.ok) {
+                alert('添加成功');
+                loadSalaries();
+            } else {
+                alert(result.error || '添加失败');
+            }
+        };
+
+        async function loadSalaries() {
+            const res = await fetch('/api/salary');
+            const data = await res.json();
+            tableBody.innerHTML = '';
+            data.forEach(salary => {
+                const row = document.createElement('tr');
+                 row.innerHTML = `
+                    <td>${salary.teacher_id}</td>
+                    <td>${salary.amount}</td>
+                    <td>${salary.date}</td>
+                    <td>
+                        <button onclick="updateSalary('${salary.teacher_id}')">编辑</button>
+                        <button onclick="deleteSalary('${salary.teacher_id}')">删除</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteSalary(teacher_id) {
+            await fetch(`/api/salary/${teacher_id}`, { method: 'DELETE' });
+            loadSalaries();
+        }
+
+        async function updateSalary(teacher_id) {
+            const newAmount = prompt('请输入新的金额');
+            const newDate = prompt('请输入新的日期');
+            const data = {
+                amount: newAmount,
+                date: newDate
+            };
+            await fetch(`/api/salary/${teacher_id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            loadSalaries();
+        }
+
+        loadSalaries();
+    </script>
+</body>
+</html>

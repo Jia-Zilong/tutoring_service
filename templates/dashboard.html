@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>管理后台</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="navbar">
+    <a href="/api/backup/download">数据库备份</a>
+    <a href="/teachers.html" target="frame">教师管理</a>
+    <a href="/schedule.html" target="frame">作息登记</a>
+    <a href="/report.html" target="frame">报表统计</a>
+    <a href="/occupation.html" target="frame">职业登记</a>
+    <a href="/salary.html" target="frame">工资管理</a> <!-- 添加工资管理入口 -->
+    <a href="/fee.html" target="frame">收费管理</a>    <!-- 添加收费管理入口 -->
+    <a href="/logout">登出</a>
+  </div>
+  <iframe name="frame" src="/teachers.html" class="main-frame"></iframe>
+</body>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // 修正选择器
+    const links = document.querySelectorAll('.navbar a');
+
+    links.forEach(link => {
+      link.addEventListener('click', function () {
+        // 移除所有链接的 active 类
+        links.forEach(l => l.classList.remove('active'));
+        // 当前点击的加上 active 类
+        this.classList.add('active');
+      });
+    });
+
+    // 默认激活第一个链接（初始页面）
+    links[1].classList.add('active'); // /teachers.html 是默认 iframe 页
+  });
+</script>
+</html>

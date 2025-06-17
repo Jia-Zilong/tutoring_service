@@ -1,0 +1,27 @@
+body { font-family: sans-serif; margin: 20px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+.login-container { width: 300px; margin: 100px auto; text-align: center; }
+.login-container input { display: block; width: 100%; margin: 8px 0; padding: 8px; }
+.navbar { background: #f0f0f0; padding: 10px; }
+.navbar a { margin-right: 15px; }
+.main-frame { width: 100%; height: calc(100vh - 50px); border: none; }
+.highlight-row {
+  background-color: #ffff99;
+}
+.navbar a.active {
+  background-color: #0779f1;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+.navbar a {
+  margin-right: 15px;
+  text-decoration: none;
+  color: black;
+}
+
+.navbar a:visited {
+  color: black;  /* 修复点击后变紫色的问题 */
+}
+

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>职业登记管理</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <h3>职业登记管理</h3>
+
+  <div>
+    <label>选择教师：
+      <select id="teacher-select">
+        <option value="">请选择教师</option>
+      </select>
+    </label>
+    <label>选择分级：
+      <select id="level-select">
+        <option value="">请选择分级</option>
+        <option value="小学">小学</option>
+        <option value="初中">初中</option>
+        <option value="高中">高中</option>
+      </select>
+    </label>
+    <label>选择职业：
+      <select id="occupation-select" disabled>
+        <option value="">请选择职业</option>
+      </select>
+    </label>
+    <button id="add-btn">添加职业</button>
+  </div>
+
+  <table id="occupation-table" border="1" cellspacing="0" cellpadding="5">
+    <thead>
+      <tr><th>教师ID</th><th>职业名称</th><th>分级</th><th>操作</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="/static/occupation.js"></script>
+</body>
+</html>

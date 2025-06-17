@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>收费管理</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>收费管理</h1>
+    <form id="fee-form">
+        <input type="text" name="teacher_id" placeholder="教师ID" required>
+        <input type="text" name="occupation_name" placeholder="项目名称" required>
+        <input type="number" name="amount" placeholder="金额" required>
+        <input type="date" name="date" required>
+        <button type="submit">添加收费</button>
+    </form>
+    <table id="fee-table">
+        <thead>
+            <tr>
+                <th>教师ID</th>
+                <th>项目名称</th>
+                <th>金额</th>
+                <th>日期</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        const form = document.getElementById('fee-form');
+        const tableBody = document.querySelector('#fee-table tbody');
+
+        form.onsubmit = async e => {
+            e.preventDefault();
+            const data = {
+                teacher_id: form.teacher_id.value,
+                occupation_name: form.occupation_name.value,
+                amount: form.amount.value,
+                date: form.date.value
+            };
+            const res = await fetch('/api/fee', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }, // 修正错误
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            if (res.ok) {
+                alert('添加成功');
+                loadFees(); // 修正错误
+            } else {
+                alert(result.error || '添加失败');
+            }
+        };
+
+        async function loadFees() { // 修正错误
+            const res = await fetch('/api/fee');
+            const data = await res.json();
+            tableBody.innerHTML = '';
+            data.forEach(fee => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${fee.teacher_id}</td>
+                    <td>${fee.occupation_name}</td>
+                    <td>${fee.amount}</td>
+                    <td>${fee.date}</td>
+                    <td>
+                        <button onclick="updateFee('${fee.teacher_id}')">编辑</button> // 修正错误
+                        <button onclick="deleteFee('${fee.teacher_id}')">删除</button> // 修正错误
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        async function deleteFee(teacher_id) { // 修正错误
+            await fetch(`/api/fee/${teacher_id}`, { method: 'DELETE' });
+            loadFees();
+        }
+
+        async function updateFee(teacher_id) { // 修正错误
+            const newOccupationName = prompt('请输入新的项目名称');
+            const newAmount = prompt('请输入新的金额');
+            const newDate = prompt('请输入新的日期');
+            const data = {
+                occupation_name: newOccupationName, // 修正错误
+                amount: newAmount,
+                date: newDate
+            };
+            await fetch(`/api/fee/${teacher_id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }, // 修正错误
+                body: JSON.stringify(data)
+            });
+            loadFees();
+        }
+
+        loadFees(); // 修正错误
+    </script>
+</body>
+</html>

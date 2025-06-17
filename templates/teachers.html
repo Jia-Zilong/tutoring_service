@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>教师管理</title>
+  <link rel="stylesheet" href="../static/style.css" />
+</head>
+<body>
+  <h3>教师信息管理</h3>
+
+  <form id="add-form">
+    <input
+      name="id"
+      placeholder="四位ID (0001-9999)"
+      required
+      pattern="^[0-9]{4}$"
+      title="请输入 0001-9999 的四位数字"
+      maxlength="4"
+    />
+    <input name="name" placeholder="姓名" required title="请输入姓名"/>
+    <select name="gender">
+      <option value="男">男</option>
+      <option value="女">女</option>
+    </select>
+    <input name="contact" placeholder="联系方式（11位电话号码）" required title="请输入电话号码"/>
+    <button type="submit">添加</button>
+    <button type="button" id="cancel-btn" style="display:none;">取消</button>
+  </form>
+
+  <table id="teacher-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>姓名</th>
+        <th>性别</th>
+        <th>联系方式</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="../static/teachers.js"></script>
+</body>
+</html>

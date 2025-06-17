@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>作息登记</title>
+  <link rel="stylesheet" href="../static/style.css">
+</head>
+<body>
+  <h3>作息登记</h3>
+
+  <form id="schedule-form">
+    <select id="sel-teacher" required></select>
+    <input type="date" id="work-date" required>
+    <input type="time" id="start-time" required>
+    <input type="time" id="end-time" required>
+    <button type="submit">登记</button>
+  </form>
+
+  <table id="schedule-table">
+    <thead>
+      <tr>
+        <th>教师ID</th>
+        <th>姓名</th>
+        <th>开始时间</th>
+        <th>结束时间</th>
+        <th>日期</th>
+        <th>操作</th> <!-- 新增操作列 -->
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script src="../static/schedule.js"></script>
+
+  <!-- 默认日期设为今天 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const dd = String(today.getDate()).padStart(2, '0');
+      document.getElementById('work-date').value = `${yyyy}-${mm}-${dd}`;
+    });
+  </script>
+</body>
+</html>
