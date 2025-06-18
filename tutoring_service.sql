@@ -11,7 +11,7 @@
  Target Server Version : 80028 (8.0.28)
  File Encoding         : 65001
 
- Date: 18/06/2025 23:32:21
+ Date: 18/06/2025 23:52:11
 */
 
 SET NAMES utf8mb4;
@@ -168,18 +168,19 @@ INSERT INTO `teachers` VALUES ('0005', '天天开心', '男', '18715519307', NUL
 INSERT INTO `teachers` VALUES ('0308', '津坤', '男', '12345678912', NULL);
 
 -- ----------------------------
--- Procedure structure for CountOccupationDemand
+-- Procedure structure for CountOccupationUsage
 -- ----------------------------
-DROP PROCEDURE IF EXISTS `CountOccupationDemand`;
+DROP PROCEDURE IF EXISTS `CountOccupationUsage`;
 delimiter ;;
-CREATE PROCEDURE `CountOccupationDemand`()
+CREATE PROCEDURE `CountOccupationUsage`()
 BEGIN
-    SELECT
-        o.name AS occupation,
-        COUNT(s.id) AS demand_times
-    FROM schedule s
-    JOIN occupation o ON s.occupation_id = o.id
-    GROUP BY s.occupation_id;
+  SELECT
+    occupation_name AS Subject,
+    level AS Level,
+    COUNT(*) AS DemandCount
+  FROM schedule
+  GROUP BY occupation_name, level
+  ORDER BY DemandCount DESC;
 END
 ;;
 delimiter ;

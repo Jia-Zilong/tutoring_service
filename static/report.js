@@ -38,6 +38,24 @@ async function showReport() {
 
 }
 
+async function loadOccupationStats() {
+  const res = await fetch('/api/reports/occupation');
+  const data = await res.json();
+
+  const tbody = document.querySelector('#occupation-table tbody');
+  tbody.innerHTML = '';
+
+  data.forEach(item => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${item.Subject || '暂无'}</td>
+        <td>${item.Level || '暂无'}</td>
+        <td>${item.DemandCount}</td>
+      </tr>`;
+  });
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   loadTeachers();
   const today = new Date().toISOString().slice(0, 10);
