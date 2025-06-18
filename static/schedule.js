@@ -1,28 +1,47 @@
-// 加载教师下拉选项
 async function loadOptions() {
   const res = await fetch('/api/teachers');
   const teachers = await res.json();
-  const select = document.getElementById('sel-teacher');
-  select.innerHTML = teachers.map(t => `<option value="${t[0]}">${t[1]}</option>`).join('');
+  const teacherSelect = document.getElementById('sel-teacher');
+  teacherSelect.innerHTML = teachers.map(t => `<option value="${t[0]}">${t[1]}</option>`).join('');
+
+  const filterSelect = document.getElementById('filter-teacher');
+  filterSelect.innerHTML = `<option value="">全部教师</option>` +
+    teachers.map(t => `<option value="${t[0]}">${t[1]}</option>`).join('');
+
+  teacherSelect.onchange = loadOccupations;
+  await loadOccupations(); // 初始化职业
 }
 
-// 加载表格数据
+
+async function loadOccupations() {
+  const teacherId = document.getElementById('sel-teacher').value;
+  if (!teacherId) return;
+  const res = await fetch(`/api/schedules/occupations/${teacherId}`);
+  const occupations = await res.json();
+  const occSelect = document.getElementById('sel-occupation');
+  occSelect.innerHTML = occupations.map(o =>
+    `<option value="${o[0]}|${o[1]}">${o[0]} - ${o[1]}</option>`
+  ).join('');
+}
+
 async function loadSchedules() {
   const res = await fetch('/api/schedules');
   const data = await res.json();
   const tbody = document.querySelector('#schedule-table tbody');
   tbody.innerHTML = '';
   data.forEach(row => {
-    const [id, teacher_id, name, start, end, date] = row;
+    const [id, teacher_id, name, start, end, date, occupation, level] = row;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${teacher_id}</td>
       <td>${name}</td>
+      <td>${occupation || '暂无'}</td>
+      <td>${level || '暂无'}</td>
       <td>${start}</td>
       <td>${end}</td>
       <td>${date}</td>
       <td>
-        <button onclick="editRow('${id}', '${teacher_id}', '${date}', '${start}', '${end}')">修改</button>
+        <button onclick="editRow('${id}', '${teacher_id}', '${date}', '${start}', '${end}', '${occupation}', '${level}')">修改</button>
         <button onclick="deleteRow(${id})">删除</button>
       </td>
     `;
@@ -30,7 +49,6 @@ async function loadSchedules() {
   });
 }
 
-// 删除记录
 async function deleteRow(id) {
   if (!confirm('确认删除这条作息记录吗？')) return;
   const res = await fetch('/api/schedules/delete', {
@@ -47,8 +65,52 @@ async function deleteRow(id) {
   }
 }
 
-// 编辑：将选中的数据填入表单
-function editRow(id, teacher_id, date, start, end) {
+async function filterSchedules() {
+  const teacher_id = document.getElementById('filter-teacher').value;
+  const start = document.getElementById('filter-start').value;
+  const end = document.getElementById('filter-end').value;
+
+  let url = '/api/schedules?';
+  if (teacher_id) url += `teacher_id=${teacher_id}&`;
+  if (start) url += `start=${start}&`;
+  if (end) url += `end=${end}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+  renderScheduleTable(data);
+}
+
+function clearFilter() {
+  document.getElementById('filter-teacher').value = '';
+  document.getElementById('filter-start').value = '';
+  document.getElementById('filter-end').value = '';
+  loadSchedules();
+}
+
+function renderScheduleTable(data) {
+  const tbody = document.querySelector('#schedule-table tbody');
+  tbody.innerHTML = '';
+  data.forEach(row => {
+    const [id, teacher_id, name, start, end, date, occupation, level] = row;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${teacher_id}</td>
+      <td>${name}</td>
+      <td>${occupation || '暂无'}</td>
+      <td>${level || '暂无'}</td>
+      <td>${start}</td>
+      <td>${end}</td>
+      <td>${date}</td>
+      <td>
+        <button onclick="editRow('${id}', '${teacher_id}', '${date}', '${start}', '${end}', '${occupation}', '${level}')">修改</button>
+        <button onclick="deleteRow(${id})">删除</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function editRow(id, teacher_id, date, start, end, occupation, level) {
   const f = document.getElementById('schedule-form');
   f['sel-teacher'].value = teacher_id;
   f['work-date'].value = date;
@@ -56,32 +118,60 @@ function editRow(id, teacher_id, date, start, end) {
   f['end-time'].value = end;
   f.dataset.mode = 'edit';
   f.dataset.id = id;
+
+  document.getElementById('submit-btn').textContent = '确认修改';
+  document.getElementById('cancel-btn').style.display = 'inline-block';
+
+  loadOccupations().then(() => {
+    const occSelect = f['sel-occupation'];
+    for (let opt of occSelect.options) {
+      if (opt.value === `${occupation}|${level}`) {
+        occSelect.value = opt.value;
+        break;
+      }
+    }
+  });
+
+  // 高亮当前编辑行
+  document.querySelectorAll('#schedule-table tbody tr').forEach(tr => {
+    tr.classList.remove('editing');
+  });
+  const trs = document.querySelectorAll('#schedule-table tbody tr');
+  for (const tr of trs) {
+    if (tr.innerHTML.includes(`editRow('${id}'`)) {
+      tr.classList.add('editing');
+      break;
+    }
+  }
 }
 
-// 表单提交
+document.getElementById('cancel-btn').onclick = () => {
+  const f = document.getElementById('schedule-form');
+  f.reset();
+  delete f.dataset.mode;
+  delete f.dataset.id;
+
+  document.getElementById('submit-btn').textContent = '登记';
+  document.getElementById('cancel-btn').style.display = 'none';
+
+  document.querySelectorAll('#schedule-table tbody tr').forEach(tr => {
+    tr.classList.remove('editing');
+  });
+};
+
 document.getElementById('schedule-form').onsubmit = async e => {
   e.preventDefault();
   const f = e.target;
   const mode = f.dataset.mode || 'add';
   const teacher_id = f['sel-teacher'].value;
+  const [occupation_name, level] = f['sel-occupation'].value.split('|');
   const work_date = f['work-date'].value;
   const start_time = f['start-time'].value;
   const end_time = f['end-time'].value;
   const id = f.dataset.id;
 
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(work_date)) {
-    alert('请输入正确的日期格式：YYYY-MM-DD');
-    return;
-  }
-
-  const year = parseInt(work_date.slice(0, 4), 10);
-  if (year < 2022 || year > 2025) {
-    alert('年份必须在 2022 到 2025 之间');
-    return;
-  }
-
   const url = mode === 'edit' ? '/api/schedules/update' : '/api/schedules';
-  const body = { teacher_id, work_date, start_time, end_time };
+  const body = { teacher_id, occupation_name, level, work_date, start_time, end_time };
   if (mode === 'edit') body.id = id;
 
   const res = await fetch(url, {
@@ -96,11 +186,15 @@ document.getElementById('schedule-form').onsubmit = async e => {
     f.reset();
     delete f.dataset.mode;
     delete f.dataset.id;
+    document.getElementById('submit-btn').textContent = '登记';
+    document.getElementById('cancel-btn').style.display = 'none';
+    document.querySelectorAll('#schedule-table tbody tr').forEach(tr => {
+      tr.classList.remove('editing');
+    });
     loadSchedules();
   } else {
     alert((mode === 'edit' ? '修改' : '登记') + '失败');
   }
 };
 
-// 初始化
 loadOptions().then(loadSchedules);

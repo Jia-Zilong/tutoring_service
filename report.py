@@ -8,13 +8,13 @@ report_bp = Blueprint('report', __name__)
 def get_hours():
     start = request.args.get('start')
     end = request.args.get('end')
-    teacher_id = request.args.get('teacher_id', None)  # 可选参数
+    teacher_id = request.args.get('teacher_id', None)
 
     cur = mysql.connection.cursor()
-    cur.callproc('TotalHoursPerTeacher', [start, end, teacher_id or ''])
+    cur.callproc('TotalHoursPerTeacherByLevel', [start, end, teacher_id or ''])
     results = cur.fetchall()
-
     columns = [desc[0] for desc in cur.description]
+
     data = []
     for row in results:
         item = {}
@@ -25,11 +25,12 @@ def get_hours():
                 minutes = (total_seconds % 3600) // 60
                 seconds = total_seconds % 60
                 val = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
-            item[col] = val
+            item[col] = val or '暂无'
         data.append(item)
 
     cur.close()
     return jsonify(data)
+
 
 
 @report_bp.route('/occupation', methods=['GET'])

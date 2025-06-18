@@ -1,100 +1,125 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>收费管理</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <title>收费管理</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
+    .paid { background-color: #d4f7dc; }
+    .unpaid { background-color: #fce4e4; }
+  </style>
 </head>
 <body>
-    <h1>收费管理</h1>
-    <form id="fee-form">
-        <input type="text" name="teacher_id" placeholder="教师ID" required>
-        <input type="text" name="occupation_name" placeholder="项目名称" required>
-        <input type="number" name="amount" placeholder="金额" required>
-        <input type="date" name="date" required>
-        <button type="submit">添加收费</button>
-    </form>
-    <table id="fee-table">
-        <thead>
-            <tr>
-                <th>教师ID</th>
-                <th>项目名称</th>
-                <th>金额</th>
-                <th>日期</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <script>
-        const form = document.getElementById('fee-form');
-        const tableBody = document.querySelector('#fee-table tbody');
+  <h2>收费明细</h2>
 
-        form.onsubmit = async e => {
-            e.preventDefault();
-            const data = {
-                teacher_id: form.teacher_id.value,
-                occupation_name: form.occupation_name.value,
-                amount: form.amount.value,
-                date: form.date.value
-            };
-            const res = await fetch('/api/fee', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }, // 修正错误
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
-            if (res.ok) {
-                alert('添加成功');
-                loadFees(); // 修正错误
-            } else {
-                alert(result.error || '添加失败');
-            }
-        };
+  <div>
+    <label>选择教师：</label>
+    <select id="teacher-select">
+      <option value="">全部教师</option>
+    </select>
 
-        async function loadFees() { // 修正错误
-            const res = await fetch('/api/fee');
-            const data = await res.json();
-            tableBody.innerHTML = '';
-            data.forEach(fee => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${fee.teacher_id}</td>
-                    <td>${fee.occupation_name}</td>
-                    <td>${fee.amount}</td>
-                    <td>${fee.date}</td>
-                    <td>
-                        <button onclick="updateFee('${fee.teacher_id}')">编辑</button> // 修正错误
-                        <button onclick="deleteFee('${fee.teacher_id}')">删除</button> // 修正错误
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
+    <label>起始日期：</label>
+    <input type="date" id="start-date">
 
-        async function deleteFee(teacher_id) { // 修正错误
-            await fetch(`/api/fee/${teacher_id}`, { method: 'DELETE' });
-            loadFees();
-        }
+    <label>结束日期：</label>
+    <input type="date" id="end-date">
 
-        async function updateFee(teacher_id) { // 修正错误
-            const newOccupationName = prompt('请输入新的项目名称');
-            const newAmount = prompt('请输入新的金额');
-            const newDate = prompt('请输入新的日期');
-            const data = {
-                occupation_name: newOccupationName, // 修正错误
-                amount: newAmount,
-                date: newDate
-            };
-            await fetch(`/api/fee/${teacher_id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' }, // 修正错误
-                body: JSON.stringify(data)
-            });
-            loadFees();
-        }
+    <button onclick="loadFees()">筛选</button>
+  </div>
 
-        loadFees(); // 修正错误
-    </script>
+  <br>
+
+  <table id="fee-table">
+    <thead>
+      <tr>
+        <th>教师</th>
+        <th>年级</th>
+        <th>科目</th>
+        <th>日期</th>
+        <th>时间</th>
+        <th>金额</th>
+        <th>支付状态</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const tbody = document.querySelector('#fee-table tbody');
+    const teacherSelect = document.getElementById('teacher-select');
+
+    async function loadTeacherList() {
+      const res = await fetch('/api/salary/teachers'); // 复用 salary 的教师列表接口
+      const data = await res.json();
+      teacherSelect.innerHTML = '<option value="">全部教师</option>';
+      data.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        teacherSelect.appendChild(option);
+      });
+    }
+
+    async function loadFees() {
+      const teacher = teacherSelect.value;
+      const start = document.getElementById('start-date').value;
+      const end = document.getElementById('end-date').value;
+
+      const params = new URLSearchParams();
+      if (teacher) params.append('teacher_name', teacher);
+      if (start) params.append('start_date', start);
+      if (end) params.append('end_date', end);
+
+      const res = await fetch(`/api/fee?${params.toString()}`);
+      const data = await res.json();
+      tbody.innerHTML = '';
+
+      data.forEach(fee => {
+        const tr = document.createElement('tr');
+        tr.className = fee.pay_status;
+
+        tr.innerHTML = `
+          <td>${fee.teacher_name}</td>
+          <td>${fee.level}</td>
+          <td>${fee.occupation_name}</td>
+          <td>${fee.date}</td>
+          <td>${fee.start_time} ~ ${fee.end_time}</td>
+          <td>¥${fee.fee_amount.toFixed(2)}</td>
+          <td>
+            <button onclick="toggleStatus(${fee.schedule_id}, '${fee.pay_status}')">
+              ${fee.pay_status === 'paid' ? '标记为未支付' : '标记为已支付'}
+            </button>
+          </td>
+          <td>
+            <button onclick="deleteFee(${fee.schedule_id})">删除</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function toggleStatus(id, currentStatus) {
+      const newStatus = currentStatus === 'paid' ? 'unpaid' : 'paid';
+      await fetch(`/api/fee/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pay_status: newStatus })
+      });
+      loadFees();
+    }
+
+    async function deleteFee(id) {
+      if (confirm('确定要删除此记录吗？')) {
+        await fetch(`/api/fee/${id}`, { method: 'DELETE' });
+        loadFees();
+      }
+    }
+
+    loadTeacherList();
+    loadFees();
+  </script>
 </body>
 </html>

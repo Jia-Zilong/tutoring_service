@@ -1,94 +1,119 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <title>工资管理</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <title>工资管理</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
+    .paid { background-color: #d4f7dc; }   /* 绿色：已发放 */
+    .unpaid { background-color: #fce4e4; } /* 红色：未发放 */
+  </style>
 </head>
 <body>
-    <h1>工资管理</h1>
-    <form id="salary-form">
-        <input type="text" name="teacher_id" placeholder="教师ID" required>
-        <input type="number" name="amount" placeholder="金额" required>
-        <input type="date" name="date" required>
-        <button type="submit">添加工资</button>
-    </form>
-    <table id="salary-table">
-        <thead>
-            <tr>
-                <th>教师ID</th>
-                <th>金额</th>
-                <th>日期</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    <script>
-        const form = document.getElementById('salary-form');
-        const tableBody = document.querySelector('#salary-table tbody');
+  <h1>工资管理</h1>
 
-        form.onsubmit = async e => {
-            e.preventDefault();
-            const data = {
-                teacher_id: form.teacher_id.value,
-                amount: form.amount.value,
-                date: form.date.value
-            };
-            const res = await fetch('/api/salary', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await res.json();
-            if (res.ok) {
-                alert('添加成功');
-                loadSalaries();
-            } else {
-                alert(result.error || '添加失败');
-            }
-        };
+  <!-- 筛选区域 -->
+  <div>
+    <label>选择教师：</label>
+    <select id="teacher-select">
+      <option value="">全部教师</option>
+    </select>
 
-        async function loadSalaries() {
-            const res = await fetch('/api/salary');
-            const data = await res.json();
-            tableBody.innerHTML = '';
-            data.forEach(salary => {
-                const row = document.createElement('tr');
-                 row.innerHTML = `
-                    <td>${salary.teacher_id}</td>
-                    <td>${salary.amount}</td>
-                    <td>${salary.date}</td>
-                    <td>
-                        <button onclick="updateSalary('${salary.teacher_id}')">编辑</button>
-                        <button onclick="deleteSalary('${salary.teacher_id}')">删除</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        }
+    <label>起始日期：</label>
+    <input type="date" id="start-date">
 
-        async function deleteSalary(teacher_id) {
-            await fetch(`/api/salary/${teacher_id}`, { method: 'DELETE' });
-            loadSalaries();
-        }
+    <label>结束日期：</label>
+    <input type="date" id="end-date">
 
-        async function updateSalary(teacher_id) {
-            const newAmount = prompt('请输入新的金额');
-            const newDate = prompt('请输入新的日期');
-            const data = {
-                amount: newAmount,
-                date: newDate
-            };
-            await fetch(`/api/salary/${teacher_id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            loadSalaries();
-        }
+    <button onclick="loadSalaries()">筛选</button>
+  </div>
 
-        loadSalaries();
-    </script>
+  <br>
+
+  <table id="salary-table">
+    <thead>
+      <tr>
+        <th>教师姓名</th>
+        <th>年级</th>
+        <th>科目</th>
+        <th>日期</th>
+        <th>开始时间</th>
+        <th>结束时间</th>
+        <th>应发工资</th>
+        <th>发放状态</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const teacherSelect = document.getElementById('teacher-select');
+    const tableBody = document.querySelector('#salary-table tbody');
+
+    async function loadTeachers() {
+      const res = await fetch('/api/salary/teachers');
+      const teachers = await res.json();
+      teacherSelect.innerHTML = '<option value="">全部教师</option>';
+      teachers.forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        teacherSelect.appendChild(option);
+      });
+    }
+
+    async function loadSalaries() {
+      const teacher = teacherSelect.value;
+      const start = document.getElementById('start-date').value;
+      const end = document.getElementById('end-date').value;
+
+      const params = new URLSearchParams();
+      if (teacher) params.append('teacher_name', teacher);
+      if (start) params.append('start_date', start);
+      if (end) params.append('end_date', end);
+
+      const res = await fetch(`/api/salary?${params.toString()}`);
+      const data = await res.json();
+      tableBody.innerHTML = '';
+
+      data.forEach(s => {
+        const row = document.createElement('tr');
+        row.className = s.pay_status; // 设置整行样式（paid/unpaid）
+
+        row.innerHTML = `
+          <td>${s.teacher_name}</td>
+          <td>${s.level}</td>
+          <td>${s.occupation_name}</td>
+          <td>${s.date}</td>
+          <td>${s.start_time}</td>
+          <td>${s.end_time}</td>
+          <td>¥${s.salary_amount.toFixed(2)}</td>
+          <td>${s.pay_status === 'paid' ? '已发放' : '未发放'}</td>
+          <td>
+            <button onclick="togglePayStatus(${s.schedule_id}, '${s.pay_status}')">
+              ${s.pay_status === 'paid' ? '标记未发' : '标记已发'}
+            </button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    async function togglePayStatus(schedule_id, currentStatus) {
+      const newStatus = currentStatus === 'paid' ? 'unpaid' : 'paid';
+      await fetch(`/api/salary/${schedule_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pay_status: newStatus })
+      });
+      loadSalaries(); // 更新页面
+    }
+
+    loadTeachers();
+    loadSalaries();
+  </script>
 </body>
 </html>

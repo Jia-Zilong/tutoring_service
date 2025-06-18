@@ -10,21 +10,40 @@
 
   <form id="schedule-form">
     <select id="sel-teacher" required></select>
+    <select id="sel-occupation" required></select>
     <input type="date" id="work-date" required>
     <input type="time" id="start-time" required>
     <input type="time" id="end-time" required>
-    <button type="submit">登记</button>
+    <button id="submit-btn" type="submit">登记</button>
+    <button id="cancel-btn" type="button" style="display:none;">取消编辑</button>
   </form>
+
+  <div id="filter-section" style="margin: 16px 0;">
+    <label>查询教师：</label>
+    <select id="filter-teacher"></select>
+
+    <label>起始日期：</label>
+    <input type="date" id="filter-start">
+
+    <label>结束日期：</label>
+    <input type="date" id="filter-end">
+
+    <button onclick="filterSchedules()">查询</button>
+    <button onclick="clearFilter()">重置</button>
+  </div>
+
 
   <table id="schedule-table">
     <thead>
       <tr>
         <th>教师ID</th>
         <th>姓名</th>
+        <th>科目</th>
+        <th>级别</th>
         <th>开始时间</th>
         <th>结束时间</th>
         <th>日期</th>
-        <th>操作</th> <!-- 新增操作列 -->
+        <th>操作</th>
       </tr>
     </thead>
     <tbody></tbody>

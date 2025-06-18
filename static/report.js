@@ -30,9 +30,12 @@ async function showReport() {
       <tr>
         <td>${r.TeacherID}</td>
         <td>${r.TeacherName}</td>
+        <td>${r.Level || '暂无'}</td>
+        <td>${r.Subject || '暂无'}</td>
         <td>${r.TotalHours}</td>
       </tr>`;
   });
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -24,4 +24,6 @@ th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
 .navbar a:visited {
   color: black;  /* 修复点击后变紫色的问题 */
 }
-
+tr.editing {
+  background-color: #f0f8ff !important; /* 淡蓝色背景 */
+}
