@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>数据库备份历史</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      margin-bottom: 15px;
+      color: #333;
+    }
+    input#descInput {
+      width: 300px;
+      padding: 6px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    button {
+      padding: 6px 15px;
+      font-size: 14px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 10px;
+      background: white;
+      box-shadow: 0 0 10px rgb(0 0 0 / 0.05);
+    }
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+      font-size: 14px;
+    }
+    th {
+      background-color: #f0f0f0;
+      font-weight: 600;
+      color: #555;
+    }
+    a.btn,
+    button.btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 4px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.25s ease;
+      font-weight: 500;
+    }
+    a.btn.blue {
+      background-color: #007bff;
+      color: white;
+      border: 1px solid #007bff;
+      margin-right: 8px;
+    }
+    a.btn.blue:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+      color: white;
+    }
+    button.btn.gray {
+      background-color: #6c757d;
+      color: white;
+      border: 1px solid #6c757d;
+    }
+    button.btn.gray:hover {
+      background-color: #5a6268;
+      border-color: #545b62;
+    }
+    button.btn.red {
+      background-color: #dc3545;
+      color: white;
+      border: 1px solid #dc3545;
+      margin-left: 5px;
+    }
+    button.btn.red:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+  </style>
+</head>
+<body>
+  <h2>数据库备份历史版本</h2>
+
+  <p>
+    <input
+      type="text"
+      id="descInput"
+      placeholder="请输入本次备份说明（可选）..."
+      maxlength="100"
+    />
+    <button class="btn blue" onclick="doBackup()">立即备份</button>
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>备份文件名</th>
+        <th>说明</th>
+        <th>备份时间</th>
+        <th>操作</th>
+      </tr>
+    </thead>
+    <tbody id="fileList"></tbody>
+  </table>
+
+  <script>
+    function loadFiles() {
+      fetch("/api/backup/list")
+        .then((res) => res.json())
+        .then((data) => {
+          const tbody = document.getElementById("fileList");
+          tbody.innerHTML = "";
+          data.files.forEach((file) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${file.backup_name}</td>
+              <td>${file.description || ""}</td>
+              <td>${file.time}</td>
+              <td>
+                <a class="btn blue" href="/api/backup/file/${file.backup_name}" download>下载</a>
+                <button class="btn gray" onclick="restore('${file.backup_name}')">恢复</button>
+                <button class="btn red" onclick="delBackup('${file.backup_name}')">删除</button>
+              </td>
+            `;
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    function restore(fileName) {
+      if (!confirm(`确定要恢复数据库到备份文件【${fileName}】吗？此操作不可逆！`)) return;
+      fetch("/api/backup/restore_from_file", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: fileName }),
+      })
+        .then((res) => res.json())
+        .then((data) => alert(data.status || "恢复完成"))
+        .then(() => loadFiles());
+    }
+
+    function doBackup() {
+      const desc = document.getElementById("descInput").value.trim();
+      fetch("/api/backup/backup_now", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: desc }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.status || "备份完成");
+          document.getElementById("descInput").value = "";
+          loadFiles();
+        });
+    }
+
+    function delBackup(fileName) {
+      if (!confirm(`确定要删除备份文件【${fileName}】吗？删除后无法恢复！`)) return;
+      fetch("/api/backup/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: fileName }),
+      })
+        .then(res => res.json())
+        .then(data => alert(data.status || "删除完成"))
+        .then(() => loadFiles());
+    }
+
+    // 初始加载备份列表
+    loadFiles();
+  </script>
+</body>
+</html>

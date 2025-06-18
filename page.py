@@ -46,3 +46,8 @@ def salary():
 @login_required
 def fee():
     return render_template('fee.html')
+
+@page_bp.route('/backup.html')
+@login_required
+def backup():
+    return render_template('backup.html')
