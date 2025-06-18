@@ -11,7 +11,7 @@
  Target Server Version : 80028 (8.0.28)
  File Encoding         : 65001
 
- Date: 18/06/2025 23:52:11
+ Date: 19/06/2025 01:49:24
 */
 
 SET NAMES utf8mb4;
@@ -35,6 +35,22 @@ CREATE TABLE `admin`  (
 INSERT INTO `admin` VALUES (1, 'admin', '123456');
 
 -- ----------------------------
+-- Table structure for backup_history
+-- ----------------------------
+DROP TABLE IF EXISTS `backup_history`;
+CREATE TABLE `backup_history`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `backup_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `backup_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of backup_history
+-- ----------------------------
+
+-- ----------------------------
 -- Table structure for fee
 -- ----------------------------
 DROP TABLE IF EXISTS `fee`;
@@ -55,8 +71,8 @@ CREATE TABLE `fee`  (
 -- ----------------------------
 -- Records of fee
 -- ----------------------------
-INSERT INTO `fee` VALUES (15, '架子龙', '高中', '数学教学', '2025-06-18', '17:54:00', '20:54:00', 300.00, 'unpaid');
-INSERT INTO `fee` VALUES (16, '津坤', '初中', '物理教学', '2025-06-18', '06:09:00', '08:10:00', 161.60, 'unpaid');
+INSERT INTO `fee` VALUES (30, '架子龙', '高中', '数学教学', '2025-06-19', '02:09:00', '05:09:00', 300.00, 'unpaid');
+INSERT INTO `fee` VALUES (31, '架子龙', '高中', '数学教学', '2025-06-19', '06:30:00', '08:30:00', 200.00, 'unpaid');
 
 -- ----------------------------
 -- Table structure for fee_rate
@@ -111,14 +127,15 @@ CREATE TABLE `salary`  (
   `end_time` time NULL DEFAULT NULL,
   `salary_amount` decimal(10, 2) NULL DEFAULT NULL,
   `pay_status` enum('unpaid','paid') CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'unpaid',
-  PRIMARY KEY (`schedule_id`) USING BTREE
+  PRIMARY KEY (`schedule_id`) USING BTREE,
+  CONSTRAINT `salary_fk_schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of salary
 -- ----------------------------
-INSERT INTO `salary` VALUES (15, '架子龙', '高中', '数学教学', '2025-06-18', '17:54:00', '20:54:00', 300.00, 'unpaid');
-INSERT INTO `salary` VALUES (16, '津坤', '初中', '物理教学', '2025-06-18', '06:09:00', '08:10:00', 161.60, 'unpaid');
+INSERT INTO `salary` VALUES (30, '架子龙', '高中', '数学教学', '2025-06-19', '02:09:00', '05:09:00', 300.00, 'unpaid');
+INSERT INTO `salary` VALUES (31, '架子龙', '高中', '数学教学', '2025-06-19', '06:30:00', '08:30:00', 200.00, 'unpaid');
 
 -- ----------------------------
 -- Table structure for schedule
@@ -138,13 +155,49 @@ CREATE TABLE `schedule`  (
   INDEX `teacher_name`(`teacher_name` ASC) USING BTREE,
   CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`teacher_name`) REFERENCES `teachers` (`name`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 17 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of schedule
 -- ----------------------------
-INSERT INTO `schedule` VALUES ('0001', '2025-06-18', '17:54:00', '20:54:00', '架子龙', 15, '数学教学', '高中');
-INSERT INTO `schedule` VALUES ('0308', '2025-06-18', '06:09:00', '08:10:00', '津坤', 16, '物理教学', '初中');
+INSERT INTO `schedule` VALUES ('0001', '2025-06-19', '02:09:00', '05:09:00', '架子龙', 30, '数学教学', '高中');
+INSERT INTO `schedule` VALUES ('0001', '2025-06-19', '06:30:00', '08:30:00', '架子龙', 31, '数学教学', '高中');
+
+-- ----------------------------
+-- Table structure for schedule_history
+-- ----------------------------
+DROP TABLE IF EXISTS `schedule_history`;
+CREATE TABLE `schedule_history`  (
+  `history_id` int NOT NULL AUTO_INCREMENT,
+  `schedule_id` int NOT NULL,
+  `teacher_id` char(4) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `teacher_name` varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date` date NULL DEFAULT NULL,
+  `start_time` time NULL DEFAULT NULL,
+  `end_time` time NULL DEFAULT NULL,
+  `occupation_name` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `level` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `operation_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `version_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`history_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of schedule_history
+-- ----------------------------
+INSERT INTO `schedule_history` VALUES (1, 18, '0001', '架子龙', '2025-06-19', '16:24:00', '18:24:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:01');
+INSERT INTO `schedule_history` VALUES (2, 16, '0308', '津坤', '2025-06-18', '06:09:00', '08:10:00', '物理教学', '初中', 'DELETE', '2025-06-19 00:31:13');
+INSERT INTO `schedule_history` VALUES (3, 21, '0001', '架子龙', '2025-06-18', '08:00:00', '10:00:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:16');
+INSERT INTO `schedule_history` VALUES (4, 15, '0001', '架子龙', '2025-06-18', '17:54:00', '20:54:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:18');
+INSERT INTO `schedule_history` VALUES (5, 17, '0001', '架子龙', '2025-06-19', '06:23:00', '08:23:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:20');
+INSERT INTO `schedule_history` VALUES (6, 22, '0001', '架子龙', '2025-06-19', '01:32:00', '03:32:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:32:38');
+INSERT INTO `schedule_history` VALUES (7, 23, '0001', '架子龙', '2025-06-19', '02:38:00', '05:38:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:38:57');
+INSERT INTO `schedule_history` VALUES (8, 24, '0001', '架子龙', '2025-06-19', '01:43:00', '03:43:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:44:56');
+INSERT INTO `schedule_history` VALUES (9, 29, '0001', '架子龙', '2025-06-19', '01:50:00', '03:50:00', '数学教学', '高中', 'INSERT', '2025-06-19 00:50:46');
+INSERT INTO `schedule_history` VALUES (10, 29, '0001', '架子龙', '2025-06-19', '01:50:00', '03:50:00', '数学教学', '高中', 'UPDATE', '2025-06-19 00:51:16');
+INSERT INTO `schedule_history` VALUES (11, 29, '0001', '架子龙', '2025-06-19', '02:51:00', '05:51:00', '数学教学', '高中', 'DELETE', '2025-06-19 01:01:39');
+INSERT INTO `schedule_history` VALUES (12, 30, '0001', '架子龙', '2025-06-19', '02:09:00', '05:09:00', '数学教学', '高中', 'INSERT', '2025-06-19 01:09:10');
+INSERT INTO `schedule_history` VALUES (13, 31, '0001', '架子龙', '2025-06-19', '06:30:00', '08:30:00', '数学教学', '高中', 'INSERT', '2025-06-19 01:30:46');
 
 -- ----------------------------
 -- Table structure for teachers
@@ -158,7 +211,7 @@ CREATE TABLE `teachers`  (
   `address` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `name`(`name` ASC) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 309 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of teachers
@@ -221,18 +274,18 @@ CREATE TRIGGER `trg_insert_fee` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
   DECLARE fee_rate DECIMAL(10,2);
   DECLARE fee_total DECIMAL(10,2);
 
-  -- 计算补课时长（小时）
+  
   SET duration_in_hours = TIME_TO_SEC(TIMEDIFF(NEW.end_time, NEW.start_time)) / 3600;
 
-  -- 获取对应level的收费标准
+  
   SELECT rate_per_hour INTO fee_rate
   FROM fee_rate
   WHERE level = NEW.level;
 
-  -- 计算总费用
+  
   SET fee_total = ROUND(duration_in_hours * fee_rate, 2);
 
-  -- 插入 fee 表记录
+  
   INSERT INTO fee (
     schedule_id, teacher_name, level, occupation_name, date,
     start_time, end_time, fee_amount, pay_status
@@ -254,10 +307,10 @@ CREATE TRIGGER `trg_insert_salary` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
   DECLARE rate DECIMAL(10,2);
   DECLARE total_salary DECIMAL(10,2);
 
-  -- 计算时长（小时）
+  
   SET duration_in_hours = TIME_TO_SEC(TIMEDIFF(NEW.end_time, NEW.start_time)) / 3600;
 
-  -- 根据 level 设置工资率
+  
   IF NEW.level = '小学' THEN
     SET rate = 60;
   ELSEIF NEW.level = '初中' THEN
@@ -268,16 +321,35 @@ CREATE TRIGGER `trg_insert_salary` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
     SET rate = 0;
   END IF;
 
-  -- 计算总工资
+  
   SET total_salary = ROUND(duration_in_hours * rate, 2);
 
-  -- 插入 salary 表
+  
   INSERT INTO salary (
     schedule_id, teacher_name, level, occupation_name,
     date, start_time, end_time, salary_amount, pay_status
   ) VALUES (
     NEW.id, NEW.teacher_name, NEW.level, NEW.occupation_name,
     NEW.date, NEW.start_time, NEW.end_time, total_salary, 'unpaid'
+  );
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Triggers structure for table schedule
+-- ----------------------------
+DROP TRIGGER IF EXISTS `trg_schedule_insert`;
+delimiter ;;
+CREATE TRIGGER `trg_schedule_insert` AFTER INSERT ON `schedule` FOR EACH ROW BEGIN
+  INSERT INTO schedule_history (
+    schedule_id, teacher_id, teacher_name, date,
+    start_time, end_time, occupation_name, level,
+    operation_type
+  ) VALUES (
+    NEW.id, NEW.teacher_id, NEW.teacher_name, NEW.date,
+    NEW.start_time, NEW.end_time, NEW.occupation_name, NEW.level,
+    'INSERT'
   );
 END
 ;;
@@ -293,18 +365,18 @@ CREATE TRIGGER `trg_update_schedule_fee` AFTER UPDATE ON `schedule` FOR EACH ROW
   DECLARE fee_rate DECIMAL(10,2);
   DECLARE fee_total DECIMAL(10,2);
 
-  -- 计算时长
+  
   SET duration_in_hours = TIME_TO_SEC(TIMEDIFF(NEW.end_time, NEW.start_time)) / 3600;
 
-  -- 获取收费标准
+  
   SELECT rate_per_hour INTO fee_rate
   FROM fee_rate
   WHERE level = NEW.level;
 
-  -- 计算费用
+  
   SET fee_total = ROUND(duration_in_hours * fee_rate, 2);
 
-  -- 更新 fee 表
+  
   UPDATE fee
   SET
     teacher_name = NEW.teacher_name,
@@ -353,6 +425,44 @@ CREATE TRIGGER `trg_update_salary` AFTER UPDATE ON `schedule` FOR EACH ROW BEGIN
     end_time = NEW.end_time,
     salary_amount = total_salary
   WHERE schedule_id = NEW.id;
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Triggers structure for table schedule
+-- ----------------------------
+DROP TRIGGER IF EXISTS `trg_schedule_update`;
+delimiter ;;
+CREATE TRIGGER `trg_schedule_update` AFTER UPDATE ON `schedule` FOR EACH ROW BEGIN
+  INSERT INTO schedule_history (
+    schedule_id, teacher_id, teacher_name, date,
+    start_time, end_time, occupation_name, level,
+    operation_type
+  ) VALUES (
+    OLD.id, OLD.teacher_id, OLD.teacher_name, OLD.date,
+    OLD.start_time, OLD.end_time, OLD.occupation_name, OLD.level,
+    'UPDATE'
+  );
+END
+;;
+delimiter ;
+
+-- ----------------------------
+-- Triggers structure for table schedule
+-- ----------------------------
+DROP TRIGGER IF EXISTS `trg_schedule_delete`;
+delimiter ;;
+CREATE TRIGGER `trg_schedule_delete` BEFORE DELETE ON `schedule` FOR EACH ROW BEGIN
+  INSERT INTO schedule_history (
+    schedule_id, teacher_id, teacher_name, date,
+    start_time, end_time, occupation_name, level,
+    operation_type
+  ) VALUES (
+    OLD.id, OLD.teacher_id, OLD.teacher_name, OLD.date,
+    OLD.start_time, OLD.end_time, OLD.occupation_name, OLD.level,
+    'DELETE'
+  );
 END
 ;;
 delimiter ;
