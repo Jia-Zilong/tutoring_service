@@ -75,11 +75,3 @@ def update_fee_status(schedule_id):
     mysql.connection.commit()
     cur.close()
     return jsonify({'status': 'success'})
-
-@fee_bp.route('/<int:schedule_id>', methods=['DELETE'])
-def delete_fee(schedule_id):
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM fee WHERE schedule_id = %s", (schedule_id,))
-    mysql.connection.commit()
-    cur.close()
-    return jsonify({'status': 'deleted'})

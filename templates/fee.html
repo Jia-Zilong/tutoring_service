@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>收费管理</title>
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css" />
   <style>
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
-    .paid { background-color: #d4f7dc; }
-    .unpaid { background-color: #fce4e4; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th,
+    td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    .paid {
+      background-color: #d4f7dc;
+    }
+    .unpaid {
+      background-color: #fce4e4;
+    }
   </style>
 </head>
 <body>
@@ -21,15 +33,15 @@
     </select>
 
     <label>起始日期：</label>
-    <input type="date" id="start-date">
+    <input type="date" id="start-date" />
 
     <label>结束日期：</label>
-    <input type="date" id="end-date">
+    <input type="date" id="end-date" />
 
     <button onclick="loadFees()">筛选</button>
   </div>
 
-  <br>
+  <br />
 
   <table id="fee-table">
     <thead>
@@ -40,8 +52,7 @@
         <th>日期</th>
         <th>时间</th>
         <th>金额</th>
-        <th>支付状态</th>
-        <th>操作</th>
+        <th>支付状态操作</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -55,7 +66,7 @@
       const res = await fetch('/api/salary/teachers'); // 复用 salary 的教师列表接口
       const data = await res.json();
       teacherSelect.innerHTML = '<option value="">全部教师</option>';
-      data.forEach(name => {
+      data.forEach((name) => {
         const option = document.createElement('option');
         option.value = name;
         option.textContent = name;
@@ -77,7 +88,7 @@
       const data = await res.json();
       tbody.innerHTML = '';
 
-      data.forEach(fee => {
+      data.forEach((fee) => {
         const tr = document.createElement('tr');
         tr.className = fee.pay_status;
 
@@ -93,9 +104,6 @@
               ${fee.pay_status === 'paid' ? '标记为未支付' : '标记为已支付'}
             </button>
           </td>
-          <td>
-            <button onclick="deleteFee(${fee.schedule_id})">删除</button>
-          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -106,16 +114,9 @@
       await fetch(`/api/fee/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pay_status: newStatus })
+        body: JSON.stringify({ pay_status: newStatus }),
       });
       loadFees();
-    }
-
-    async function deleteFee(id) {
-      if (confirm('确定要删除此记录吗？')) {
-        await fetch(`/api/fee/${id}`, { method: 'DELETE' });
-        loadFees();
-      }
     }
 
     loadTeacherList();
