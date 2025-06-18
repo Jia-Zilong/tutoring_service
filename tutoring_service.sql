@@ -1,7 +1,7 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : local
+ Source Server         : myroot
  Source Server Type    : MySQL
  Source Server Version : 80028 (8.0.28)
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 80028 (8.0.28)
  File Encoding         : 65001
 
- Date: 19/06/2025 01:49:24
+ Date: 19/06/2025 07:29:29
 */
 
 SET NAMES utf8mb4;
@@ -44,11 +44,12 @@ CREATE TABLE `backup_history`  (
   `backup_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of backup_history
 -- ----------------------------
+INSERT INTO `backup_history` VALUES (4, 'backup_20250619_062128.sql', '2025-06-19 06:21:30', 'Initial Backup');
 
 -- ----------------------------
 -- Table structure for fee
@@ -66,13 +67,18 @@ CREATE TABLE `fee`  (
   `pay_status` enum('paid','unpaid') CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'unpaid',
   PRIMARY KEY (`schedule_id`) USING BTREE,
   CONSTRAINT `fee_fk_schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fee
 -- ----------------------------
-INSERT INTO `fee` VALUES (30, '架子龙', '高中', '数学教学', '2025-06-19', '02:09:00', '05:09:00', 300.00, 'unpaid');
-INSERT INTO `fee` VALUES (31, '架子龙', '高中', '数学教学', '2025-06-19', '06:30:00', '08:30:00', 200.00, 'unpaid');
+INSERT INTO `fee` VALUES (32, '张三', '高中', '数学教学', '2025-06-19', '02:09:00', '05:09:00', 300.00, 'unpaid');
+INSERT INTO `fee` VALUES (33, '张三', '高中', '数学教学', '2025-06-19', '06:30:00', '08:30:00', 200.00, 'unpaid');
+INSERT INTO `fee` VALUES (34, '李四', '初中', '数学教学', '2025-06-20', '09:00:00', '11:00:00', 160.00, 'unpaid');
+INSERT INTO `fee` VALUES (35, '王五', '高中', '地理教学', '2025-06-20', '14:30:00', '16:30:00', 200.00, 'unpaid');
+INSERT INTO `fee` VALUES (36, '王五', '初中', '物理教学', '2025-06-21', '10:00:00', '12:00:00', 160.00, 'unpaid');
+INSERT INTO `fee` VALUES (37, '赵六', '小学', '语文教学', '2025-06-21', '15:30:00', '17:30:00', 120.00, 'unpaid');
+INSERT INTO `fee` VALUES (38, '钱七', '初中', '英语教学', '2025-06-22', '08:00:00', '10:00:00', 160.00, 'unpaid');
 
 -- ----------------------------
 -- Table structure for fee_rate
@@ -82,7 +88,7 @@ CREATE TABLE `fee_rate`  (
   `level` varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `rate_per_hour` decimal(10, 2) NOT NULL,
   PRIMARY KEY (`level`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of fee_rate
@@ -112,6 +118,8 @@ INSERT INTO `occupation` VALUES ('0005', '数学教学', '初中');
 INSERT INTO `occupation` VALUES ('0308', '地理教学', '高中');
 INSERT INTO `occupation` VALUES ('0308', '物理教学', '初中');
 INSERT INTO `occupation` VALUES ('0308', '物理教学', '高中');
+INSERT INTO `occupation` VALUES ('0409', '语文教学', '小学');
+INSERT INTO `occupation` VALUES ('0510', '英语教学', '初中');
 
 -- ----------------------------
 -- Table structure for salary
@@ -129,13 +137,18 @@ CREATE TABLE `salary`  (
   `pay_status` enum('unpaid','paid') CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT 'unpaid',
   PRIMARY KEY (`schedule_id`) USING BTREE,
   CONSTRAINT `salary_fk_schedule` FOREIGN KEY (`schedule_id`) REFERENCES `schedule` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of salary
 -- ----------------------------
-INSERT INTO `salary` VALUES (30, '架子龙', '高中', '数学教学', '2025-06-19', '02:09:00', '05:09:00', 300.00, 'unpaid');
-INSERT INTO `salary` VALUES (31, '架子龙', '高中', '数学教学', '2025-06-19', '06:30:00', '08:30:00', 200.00, 'unpaid');
+INSERT INTO `salary` VALUES (32, '张三', '高中', '数学教学', '2025-06-19', '02:09:00', '05:09:00', 300.00, 'unpaid');
+INSERT INTO `salary` VALUES (33, '张三', '高中', '数学教学', '2025-06-19', '06:30:00', '08:30:00', 200.00, 'unpaid');
+INSERT INTO `salary` VALUES (34, '李四', '初中', '数学教学', '2025-06-20', '09:00:00', '11:00:00', 160.00, 'unpaid');
+INSERT INTO `salary` VALUES (35, '王五', '高中', '地理教学', '2025-06-20', '14:30:00', '16:30:00', 200.00, 'unpaid');
+INSERT INTO `salary` VALUES (36, '王五', '初中', '物理教学', '2025-06-21', '10:00:00', '12:00:00', 160.00, 'unpaid');
+INSERT INTO `salary` VALUES (37, '赵六', '小学', '语文教学', '2025-06-21', '15:30:00', '17:30:00', 120.00, 'unpaid');
+INSERT INTO `salary` VALUES (38, '钱七', '初中', '英语教学', '2025-06-22', '08:00:00', '10:00:00', 160.00, 'unpaid');
 
 -- ----------------------------
 -- Table structure for schedule
@@ -155,13 +168,18 @@ CREATE TABLE `schedule`  (
   INDEX `teacher_name`(`teacher_name` ASC) USING BTREE,
   CONSTRAINT `schedule_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `schedule_ibfk_2` FOREIGN KEY (`teacher_name`) REFERENCES `teachers` (`name`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 32 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of schedule
 -- ----------------------------
-INSERT INTO `schedule` VALUES ('0001', '2025-06-19', '02:09:00', '05:09:00', '架子龙', 30, '数学教学', '高中');
-INSERT INTO `schedule` VALUES ('0001', '2025-06-19', '06:30:00', '08:30:00', '架子龙', 31, '数学教学', '高中');
+INSERT INTO `schedule` VALUES ('0001', '2025-06-19', '02:09:00', '05:09:00', '张三', 32, '数学教学', '高中');
+INSERT INTO `schedule` VALUES ('0001', '2025-06-19', '06:30:00', '08:30:00', '张三', 33, '数学教学', '高中');
+INSERT INTO `schedule` VALUES ('0005', '2025-06-20', '09:00:00', '11:00:00', '李四', 34, '数学教学', '初中');
+INSERT INTO `schedule` VALUES ('0308', '2025-06-20', '14:30:00', '16:30:00', '王五', 35, '地理教学', '高中');
+INSERT INTO `schedule` VALUES ('0308', '2025-06-21', '10:00:00', '12:00:00', '王五', 36, '物理教学', '初中');
+INSERT INTO `schedule` VALUES ('0409', '2025-06-21', '15:30:00', '17:30:00', '赵六', 37, '语文教学', '小学');
+INSERT INTO `schedule` VALUES ('0510', '2025-06-22', '08:00:00', '10:00:00', '钱七', 38, '英语教学', '初中');
 
 -- ----------------------------
 -- Table structure for schedule_history
@@ -180,24 +198,18 @@ CREATE TABLE `schedule_history`  (
   `operation_type` varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `version_time` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`history_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 14 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 23 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of schedule_history
 -- ----------------------------
-INSERT INTO `schedule_history` VALUES (1, 18, '0001', '架子龙', '2025-06-19', '16:24:00', '18:24:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:01');
-INSERT INTO `schedule_history` VALUES (2, 16, '0308', '津坤', '2025-06-18', '06:09:00', '08:10:00', '物理教学', '初中', 'DELETE', '2025-06-19 00:31:13');
-INSERT INTO `schedule_history` VALUES (3, 21, '0001', '架子龙', '2025-06-18', '08:00:00', '10:00:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:16');
-INSERT INTO `schedule_history` VALUES (4, 15, '0001', '架子龙', '2025-06-18', '17:54:00', '20:54:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:18');
-INSERT INTO `schedule_history` VALUES (5, 17, '0001', '架子龙', '2025-06-19', '06:23:00', '08:23:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:31:20');
-INSERT INTO `schedule_history` VALUES (6, 22, '0001', '架子龙', '2025-06-19', '01:32:00', '03:32:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:32:38');
-INSERT INTO `schedule_history` VALUES (7, 23, '0001', '架子龙', '2025-06-19', '02:38:00', '05:38:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:38:57');
-INSERT INTO `schedule_history` VALUES (8, 24, '0001', '架子龙', '2025-06-19', '01:43:00', '03:43:00', '数学教学', '高中', 'DELETE', '2025-06-19 00:44:56');
-INSERT INTO `schedule_history` VALUES (9, 29, '0001', '架子龙', '2025-06-19', '01:50:00', '03:50:00', '数学教学', '高中', 'INSERT', '2025-06-19 00:50:46');
-INSERT INTO `schedule_history` VALUES (10, 29, '0001', '架子龙', '2025-06-19', '01:50:00', '03:50:00', '数学教学', '高中', 'UPDATE', '2025-06-19 00:51:16');
-INSERT INTO `schedule_history` VALUES (11, 29, '0001', '架子龙', '2025-06-19', '02:51:00', '05:51:00', '数学教学', '高中', 'DELETE', '2025-06-19 01:01:39');
-INSERT INTO `schedule_history` VALUES (12, 30, '0001', '架子龙', '2025-06-19', '02:09:00', '05:09:00', '数学教学', '高中', 'INSERT', '2025-06-19 01:09:10');
-INSERT INTO `schedule_history` VALUES (13, 31, '0001', '架子龙', '2025-06-19', '06:30:00', '08:30:00', '数学教学', '高中', 'INSERT', '2025-06-19 01:30:46');
+INSERT INTO `schedule_history` VALUES (16, 32, '0001', '张三', '2025-06-19', '02:09:00', '05:09:00', '数学教学', '高中', 'INSERT', '2025-06-19 06:17:51');
+INSERT INTO `schedule_history` VALUES (17, 33, '0001', '张三', '2025-06-19', '06:30:00', '08:30:00', '数学教学', '高中', 'INSERT', '2025-06-19 06:17:51');
+INSERT INTO `schedule_history` VALUES (18, 34, '0005', '李四', '2025-06-20', '09:00:00', '11:00:00', '数学教学', '初中', 'INSERT', '2025-06-19 06:17:51');
+INSERT INTO `schedule_history` VALUES (19, 35, '0308', '王五', '2025-06-20', '14:30:00', '16:30:00', '地理教学', '高中', 'INSERT', '2025-06-19 06:17:51');
+INSERT INTO `schedule_history` VALUES (20, 36, '0308', '王五', '2025-06-21', '10:00:00', '12:00:00', '物理教学', '初中', 'INSERT', '2025-06-19 06:17:51');
+INSERT INTO `schedule_history` VALUES (21, 37, '0409', '赵六', '2025-06-21', '15:30:00', '17:30:00', '语文教学', '小学', 'INSERT', '2025-06-19 06:17:51');
+INSERT INTO `schedule_history` VALUES (22, 38, '0510', '钱七', '2025-06-22', '08:00:00', '10:00:00', '英语教学', '初中', 'INSERT', '2025-06-19 06:17:51');
 
 -- ----------------------------
 -- Table structure for teachers
@@ -216,9 +228,11 @@ CREATE TABLE `teachers`  (
 -- ----------------------------
 -- Records of teachers
 -- ----------------------------
-INSERT INTO `teachers` VALUES ('0001', '架子龙', '男', '12345678962', NULL);
-INSERT INTO `teachers` VALUES ('0005', '天天开心', '男', '18715519307', NULL);
-INSERT INTO `teachers` VALUES ('0308', '津坤', '男', '12345678912', NULL);
+INSERT INTO `teachers` VALUES ('0001', '张三', '男', '12345678962', '北京市海淀区');
+INSERT INTO `teachers` VALUES ('0005', '李四', '女', '18715519307', '上海市浦东新区');
+INSERT INTO `teachers` VALUES ('0308', '王五', '男', '12345678912', '深圳市南山区');
+INSERT INTO `teachers` VALUES ('0409', '赵六', '女', '23456789012', '广州市天河区');
+INSERT INTO `teachers` VALUES ('0510', '钱七', '男', '34567890123', '成都市武侯区');
 
 -- ----------------------------
 -- Procedure structure for CountOccupationUsage

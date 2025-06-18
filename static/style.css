@@ -1,29 +1,113 @@
-body { font-family: sans-serif; margin: 20px; }
-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
-.login-container { width: 300px; margin: 100px auto; text-align: center; }
-.login-container input { display: block; width: 100%; margin: 8px 0; padding: 8px; }
-.navbar { background: #f0f0f0; padding: 10px; }
-.navbar a { margin-right: 15px; }
-.main-frame { width: 100%; height: calc(100vh - 50px); border: none; }
-.highlight-row {
-  background-color: #ffff99;
+/* 基础样式 */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5; /* 默认背景色 */
+  color: #333; /* 文字颜色 */
 }
+
+/* 登录容器样式 */
+.login-container {
+  width: 300px;
+  margin: 100px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-container h2 {
+  margin-bottom: 20px;
+}
+
+.login-container input {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background-color: #0056b3;
+}
+
+/* 导航栏样式 */
+.navbar {
+  background: #333;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+  font-size: 16px;
+}
+
 .navbar a.active {
   background-color: #0779f1;
   color: white;
   padding: 6px 10px;
   border-radius: 4px;
 }
-.navbar a {
-  margin-right: 15px;
-  text-decoration: none;
-  color: black;
-}
 
 .navbar a:visited {
-  color: black;  /* 修复点击后变紫色的问题 */
+  color: white; /* 修复点击后变紫色的问题 */
 }
+
+
+/* 表格样式 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+/* 高亮行样式 */
+.highlight-row {
+  background-color: #ffff99;
+}
+
+/* 编辑状态行样式 */
 tr.editing {
   background-color: #f0f8ff !important; /* 淡蓝色背景 */
+}
+
+/* 主框架样式 */
+.main-frame {
+  width: 100%;
+  height: calc(100vh - 50px);
+  border: none;
+  background: white;
+  padding: 20px;
+  box-sizing: border-box;
 }
