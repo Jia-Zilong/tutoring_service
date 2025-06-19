@@ -3,21 +3,104 @@
 <head>
   <meta charset="UTF-8">
   <title>管理员登录</title>
-  <link rel="stylesheet" href="../static/style.css">
   <style>
-    body {
+    * {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background-image: url('../static/background.jpg');
-      background-size: cover; /* 使背景图片覆盖整个页面 */
-      background-position: center; /* 将背景图片居中 */
-      background-repeat: no-repeat; /* 防止背景图片重复 */
-      height: 100vh; /* 确保 body 元素的高度为视口高度 */
+      box-sizing: border-box;
+    }
+    li {
+      list-style: none;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      font-family: "Arial", sans-serif;
+      background: url('../static/bg.jpg') no-repeat top center;
+      background-size: cover;
+      height: 100vh;
+      line-height: 1.15;
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
+    .login-container {
+      width: 400px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(25, 186, 139, 0.17);
+      position: relative;
+      text-align: center;
+    }
+
+    .login-container::before,
+    .login-container::after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 2px solid #02a6b5;
+    }
+
+    .login-container::before {
+      top: 0;
+      left: 0;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .login-container::after {
+      bottom: 0;
+      right: 0;
+      border-left: none;
+      border-top: none;
+    }
+
+    .login-container h2 {
+      font-size: 28px;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .login-container form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .login-container input {
+      font-size: 16px;
+      padding: 12px 14px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      outline: none;
+    }
+
+    .login-container input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .login-container button {
+      font-size: 18px;
+      padding: 12px;
+      color: #fff;
+      background-color: #02a6b5;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .login-container button:hover {
+      background-color: #029da7;
+    }
+
   </style>
 </head>
 <body>
